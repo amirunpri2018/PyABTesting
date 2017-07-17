@@ -21,7 +21,7 @@ import backtrader as bt
 class TestStrategy(bt.Strategy):
     params = (
         ('maperiod', 15),
-        ('printlog', False),
+        ('printlog', True),
     )
 
     def log(self, txt, dt=None, doprint=False):
@@ -149,7 +149,7 @@ if __name__ == '__main__':
     cerebro.addsizer(bt.sizers.FixedSize, stake=10)
 
     # Set the commission
-    cerebro.broker.setcommission(commission=0.0)
+    cerebro.broker.setcommission(commission=0.0002)
 
     # Run over everything
     cerebro.run()
