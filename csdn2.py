@@ -39,11 +39,12 @@ class TestStrategy(bt.Strategy):
         # Add a MovingAverageSimple indicator  
         self.sma = bt.indicators.SimpleMovingAverage(  
             self.datas[0], period=self.params.maperiod)  
+		
     def start(self):  
         print("the world call me!")  
   
     def prenext(self):  
-        print("not mature")  
+        print("prenext period due to sma")  
   
     def notify_order(self, order):  
         if order.status in [order.Submitted, order.Accepted]:  
@@ -73,7 +74,7 @@ class TestStrategy(bt.Strategy):
         elif order.status in [order.Canceled, order.Margin, order.Rejected]:  
             self.log('Order Canceled/Margin/Rejected')  
   
-        self.order = None  
+        self.order = None 
 		
 		
 if __name__ == '__main__':  
