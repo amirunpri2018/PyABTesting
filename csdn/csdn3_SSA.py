@@ -183,9 +183,9 @@ if __name__ == '__main__':
     # Set our desired cash start  
     cerebro.broker.setcash(100000.0)  
     # 设置每笔交易交易的股票数量  
-    cerebro.addsizer(bt.sizers.FixedSize, stake=200)  
+    cerebro.addsizer(bt.sizers.FixedSize, stake=500)  
     # Set the commission  
-    cerebro.broker.setcommission(commission=0.002)  
+    cerebro.broker.setcommission(commission=0.0002)  
     # Print out the starting conditions  
     print('Starting Portfolio Value: %.2f' % cerebro.broker.getvalue())  
     # Run over everything  
