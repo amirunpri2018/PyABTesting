@@ -108,7 +108,7 @@ if __name__ == '__main__':
     end = datetime.datetime(2016, 10, 31)
     is_first = True
     # Not the same set of symbols as in other blog posts
-    symbols = ["AAPL", "GOOG", "MSFT", "AMZN", "YHOO", "SNY", "NTDOY", "IBM", "HPQ", "QCOM", "NVDA"]
+    symbols = ["AAPL", "GOOG", "MSFT", "AMZN", "SNY", "NTDOY", "IBM", "HPQ", "QCOM", "NVDA"]
     plot_symbols = ["AAPL", "GOOG", "NVDA"]
     #plot_symbols = []
     for s in symbols:
