@@ -58,18 +58,18 @@ if __name__ == '__main__':
     cerebro = bt.Cerebro()  
     cerebro.optstrategy(  
         MyStrategy,  
-        maperiod=range(10, 31))  
-    dataframe = pd.read_csv('./datas/yhoo-1996-2015.txt', index_col=0, parse_dates=True)  
+        maperiod=range(6, 131))  
+    dataframe = pd.read_csv('D:/Projects/PyABTesting/datas/yhoo-1996-2015.txt', index_col=0, parse_dates=True)  
     dataframe['openinterest'] = 0  
     data = bt.feeds.PandasData(dataname=dataframe,  
-                            fromdate = datetime.datetime(2013, 1, 1),  
+                            fromdate = datetime.datetime(2010, 1, 1),  
                             todate = datetime.datetime(2015, 12, 31)  
                             )  
     cerebro.adddata(data)  
     cerebro.broker.setcash(10000.0)  
-    cerebro.addsizer(bt.sizers.FixedSize, stake=1)  
+    cerebro.addsizer(bt.sizers.FixedSize, stake=100)  
     cerebro.broker.setcommission(commission=0.0)  
     print('Starting Portfolio Value: %.2f' % cerebro.broker.getvalue())  
     cerebro.run()  
     print('Final Portfolio Value: %.2f' % cerebro.broker.getvalue())  
-    # cerebro.plot()  
+    cerebro.plot()  
