@@ -266,10 +266,9 @@ class AcctStats(bt.Analyzer):
         return {"start": self.start_val, "end": self.end_val,
                 "growth": self.end_val - self.start_val, "return": self.end_val / self.start_val}
 		
-		cerebro_wf = bt.Cerebro(stdstats=False)
-
-
- 
+		
+		
+cerebro_wf = bt.Cerebro(stdstats=False)
 plot_symbols = ["AAPL", "GOOG", "NVDA"]
 is_first = True
 #plot_symbols = []
