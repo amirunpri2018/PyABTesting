@@ -12,9 +12,21 @@ from pandas import Series, DataFrame
 import random
 import pyfolio as pf
 from copy import deepcopy
- 
+
+# import rpy2's package module
+import rpy2.robjects.packages as rpackages
+# import R's utility package
+utils = rpackages.importr('utils')
+# select a mirror for R packages
+utils.chooseCRANmirror(ind=1) # select the first mirror in the list
+# R package names
+packnames = ('PerformanceAnalytics')
+# R vector of strings
+from rpy2.robjects.vectors import StrVector
+# Selectively install what needs to be install.
+utils.install_packages(packnames)
+
 from rpy2.robjects.packages import importr
- 
 pa = importr("PerformanceAnalytics")    # The R package PerformanceAnalytics, containing the R function VaR
  
 from rpy2.robjects import numpy2ri, pandas2ri
