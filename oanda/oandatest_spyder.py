@@ -36,7 +36,7 @@ from backtrader.utils import flushfile  # win32 quick stdout flushing
 
 StoreCls = bt.stores.OandaStore
 DataCls = bt.feeds.OandaData
-BrokerCls = bt.brokers.OandaBroker
+#BrokerCls = bt.brokers.OandaBroker
 
 
 class TestStrategy(bt.Strategy):
@@ -91,6 +91,7 @@ class TestStrategy(bt.Strategy):
         print('-' * 50, 'TRADE END')
 
     def prenext(self):
+        print("pre periods")
         self.next(frompre=True)
 
     def next(self, frompre=False):
@@ -195,123 +196,148 @@ class TestStrategy(bt.Strategy):
 
 
 
-
-# Create a cerebro
-cerebro = bt.Cerebro()
-
-storekwargs = dict(
-    token="8153764443276ed6230c2d8a95dac609-e9e68019e7c1c51e6f99a755007914f7",
-    account="101-011-6029361-001",
-    practice="practice"
-)
-
-store = StoreCls(**storekwargs)
-broker = BrokerCls(**storekwargs)
-cerebro.setbroker(broker)
-
-timeframe = bt.TimeFrame.TFrame(bt.TimeFrame.Names[4])
-compression = 15
-# Manage data1 parameters
-tf1 = timeframe
-cp1 = compression
-resample = False
-replay = False
-if resample or replay:
-    datatf = datatf1 = bt.TimeFrame.Ticks
-    datacomp = datacomp1 = 1
-else:
-    datatf = timeframe
-    datacomp = compression
-    datatf1 = tf1
-    datacomp1 = cp1
-
-fromdate = "2010-01-01"
-if fromdate:
-    dtformat = '%Y-%m-%d' + ('T%H:%M:%S' * ('T' in fromdate))
-    fromdate = datetime.datetime.strptime(fromdate, dtformat)
-
-no_store = False
-DataFactory = DataCls if no_store else store.getdata
-
-datakwargs = dict(
-    timeframe=datatf, compression=datacomp,
-    qcheck=args.qcheck,
-    historical=args.historical,
-    fromdate=fromdate,
-    bidask=args.bidask,
-    useask=args.useask,
-    backfill_start=not args.no_backfill_start,
-    backfill=not args.no_backfill,
-    tz=args.timezone
-)
-
-if args.no_store and not args.broker:   # neither store nor broker
-    datakwargs.update(storekwargs)  # pass the store args over the data
-
-data0 = DataFactory(dataname=args.data0, **datakwargs)
-
-data1 = None
-if args.data1 is not None:
-    if args.data1 != args.data0:
-        datakwargs['timeframe'] = datatf1
-        datakwargs['compression'] = datacomp1
-        data1 = DataFactory(dataname=args.data1, **datakwargs)
+if __name__ == '__main__':
+    # Create a cerebro
+    cerebro = bt.Cerebro()
+    
+    storekwargs = dict(
+        token="8153764443276ed6230c2d8a95dac609-e9e68019e7c1c51e6f99a755007914f7",
+        account="101-011-6029361-001",
+        practice="practice"
+    )
+    
+    store = StoreCls(**storekwargs)
+    broker = store.getbroker()
+    # broker = BrokerCls(**storekwargs)
+    cerebro.setbroker(broker)
+    
+    timeframe = bt.TimeFrame.TFrame(bt.TimeFrame.Names[4])
+    compression = 15
+    # Manage data1 parameters
+    tf1 = timeframe
+    cp1 = compression
+    resample = False
+    replay = False
+    if resample or replay:
+        datatf = datatf1 = bt.TimeFrame.Ticks
+        datacomp = datacomp1 = 1
     else:
-        data1 = data0
-
-rekwargs = dict(
-    timeframe=timeframe, compression=args.compression,
-    bar2edge=not args.no_bar2edge,
-    adjbartime=not args.no_adjbartime,
-    rightedge=not args.no_rightedge,
-    takelate=not args.no_takelate,
-)
-
-if args.replay:
-    cerebro.replaydata(data0, **rekwargs)
-
+        datatf = timeframe
+        datacomp = compression
+        datatf1 = tf1
+        datacomp1 = cp1
+    
+    fromdate = "2010-01-01"
+    if fromdate:
+        dtformat = '%Y-%m-%d' + ('T%H:%M:%S' * ('T' in fromdate))
+        fromdate = datetime.datetime.strptime(fromdate, dtformat)
+    
+    no_store = False
+    DataFactory = DataCls if no_store else store.getdata
+    
+    qcheck = 0.5
+    historical = False
+    bidask = True
+    useask = True
+    no_backfill_start = False
+    no_backfill = False
+    timezone = None
+    datakwargs = dict(
+        timeframe=datatf, compression=datacomp,
+        qcheck=qcheck,
+        historical=historical,
+        fromdate=fromdate,
+        bidask=bidask,
+        useask=useask,
+        backfill_start=not no_backfill_start,
+        backfill=not no_backfill,
+        tz=timezone
+    )
+    
+    if no_store and not broker:   # neither store nor broker
+        datakwargs.update(storekwargs)  # pass the store args over the data
+    
+    data0 = None
+    data0 = DataFactory(dataname=data0, **datakwargs)
+    
+    data1 = None
     if data1 is not None:
-        rekwargs['timeframe'] = tf1
-        rekwargs['compression'] = cp1
-        cerebro.replaydata(data1, **rekwargs)
-
-elif args.resample:
-    cerebro.resampledata(data0, **rekwargs)
-
-    if data1 is not None:
-        rekwargs['timeframe'] = tf1
-        rekwargs['compression'] = cp1
-        cerebro.resampledata(data1, **rekwargs)
-
-else:
-    cerebro.adddata(data0)
-    if data1 is not None:
-        cerebro.adddata(data1)
-
-if args.valid is None:
+        if data1 != data0:
+            datakwargs['timeframe'] = datatf1
+            datakwargs['compression'] = datacomp1
+            data1 = DataFactory(dataname=data1, **datakwargs)
+        else:
+            data1 = data0
+    
+    no_bar2edge = None
+    no_adjbartime = None
+    no_rightedge = None
+    no_takelate = None
+    rekwargs = dict(
+        timeframe=timeframe, compression=compression,
+        bar2edge=not no_bar2edge,
+        adjbartime=not no_adjbartime,
+        rightedge=not no_rightedge,
+        takelate=not no_takelate,
+    )
+    
+    if replay:
+        cerebro.replaydata(data0, **rekwargs)
+    
+        if data1 is not None:
+            rekwargs['timeframe'] = tf1
+            rekwargs['compression'] = cp1
+            cerebro.replaydata(data1, **rekwargs)
+    
+    elif resample:
+        cerebro.resampledata(data0, **rekwargs)
+    
+        if data1 is not None:
+            rekwargs['timeframe'] = tf1
+            rekwargs['compression'] = cp1
+            cerebro.resampledata(data1, **rekwargs)
+    
+    else:
+        cerebro.adddata(data0)
+        if data1 is not None:
+            cerebro.adddata(data1)
+    
     valid = None
-else:
-    valid = datetime.timedelta(seconds=args.valid)
-# Add the strategy
-cerebro.addstrategy(TestStrategy,
-                    smaperiod=args.smaperiod,
-                    trade=args.trade,
-                    exectype=bt.Order.ExecType(args.exectype),
-                    stake=args.stake,
-                    stopafter=args.stopafter,
-                    valid=valid,
-                    cancel=args.cancel,
-                    donotcounter=args.donotcounter,
-                    sell=args.sell,
-                    usebracket=args.usebracket)
-
-# Live data ... avoid long data accumulation by switching to "exactbars"
-cerebro.run(exactbars=args.exactbars)
-if args.exactbars < 1:  # plotting is possible
-    if args.plot:
-        pkwargs = dict(style='line')
-        if args.plot is not True:  # evals to True but is not True
-            npkwargs = eval('dict(' + args.plot + ')')  # args were passed
-            pkwargs.update(npkwargs)
-
-        cerebro.plot(**pkwargs)
+    if valid is None:
+        valid = None
+    else:
+        valid = datetime.timedelta(seconds=valid)
+    # Add the strategy
+    smaperiod = 20
+    trade = None
+    exectype = bt.Order.ExecTypes[0]
+    stopafter = 0
+    donotcounter = None
+    cancel = 0
+    sell = None
+    usebracket = None
+    stake = None
+    cerebro.addstrategy(TestStrategy,
+                        smaperiod=smaperiod,
+                        trade=trade,
+                        exectype=bt.Order.ExecType(exectype),
+                        stake=stake,
+                        stopafter=stopafter,
+                        valid=valid,
+                        cancel=cancel,
+                        donotcounter=donotcounter,
+                        sell=sell,
+                        usebracket=usebracket)
+    
+    # Live data ... avoid long data accumulation by switching to "exactbars"
+    exactbars = 1
+    cerebro.run(exactbars=exactbars)
+    plot = None
+    if exactbars < 1:  # plotting is possible
+        if plot:
+            pkwargs = dict(style='line')
+            if plot is not True:  # evals to True but is not True
+                npkwargs = eval('dict(' + plot + ')')  # args were passed
+                pkwargs.update(npkwargs)
+    
+            cerebro.plot(**pkwargs)
